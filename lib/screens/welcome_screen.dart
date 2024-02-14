@@ -11,11 +11,31 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation animation;
+  late Animation animation2;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+        vsync: this, duration: Duration(seconds: 3), upperBound: 1);
+    animation = CurvedAnimation(parent: controller, curve: Curves.bounceOut);
+    animation2 =
+        ColorTween(begin: Colors.grey[700], end: Colors.white).animate(controller);
+    controller.forward();
+    controller.addListener(() {
+      setState(() {});
+      print(animation.value);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation2.value,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -24,9 +44,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                SizedBox(
-                  height: 60.0,
-                  child: Image.asset('images/logo.png'),
+                Hero(
+                  tag: 'logo',
+                  child: SizedBox(
+                    height: animation.value * 80,
+                    child: Image.asset('images/logo.png'),
+                  ),
                 ),
                 const Text(
                   'Flash Chat',
